@@ -1,0 +1,13 @@
+{
+  "APP_ENV": "TEST",
+  "PROD": {
+    "PATH_ORIGEM_07": "S:\\REDE_BOSCH\\07_origem",
+    "PATH_DESTINO_06": "S:\\REDE_BOSCH\\06_destino",
+    "PATH_LOG_CENTRAL": "S:\\REDE_BOSCH\\logs"
+  },
+  "TEST": {
+    "PATH_ORIGEM_07": "07_origem",
+    "PATH_DESTINO_06": "06_destino",
+    "PATH_LOG_CENTRAL": "logs"
+  }
+}
