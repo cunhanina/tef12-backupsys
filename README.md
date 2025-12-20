@@ -2,39 +2,39 @@
   <img src="assets/images/supergraph.png" width="100%" height="12" alt="Bosch Supergraph" />
   <br />
   <br />
-  
+   
   <img src="assets/images/logo_bosch.png" width="140" alt="Bosch Logo" />
   <br />
 
   # TEF12 - Industrial Backup System
-  
+   
   [![Python](https://img.shields.io/badge/Python-3.14-007BC0?style=flat&logo=python&logoColor=white)](https://python.org)
   [![Design System](https://img.shields.io/badge/Design_System-BDS-007BC0?style=flat)](https://bosch-design-system.com)
-  [![Platform](https://img.shields.io/badge/Platform-Windows/Linux-blue?style=flat&logo=windows&logoColor=white)](#)
+  [![Environment](https://img.shields.io/badge/Environment-Test_%7C_Prod-orange?style=flat)](#)
   [![Status](https://img.shields.io/badge/Status-Production_Ready-success?style=flat)](#)
 
-  **A robust, BDS-compliant solution for standardizing and managing CNC/PLC machine backups.**
+  **The enterprise standard for securing, validating, and managing industrial CNC/PLC data.**
 </div>
 
 ---
 
-## 📖 Overview
+## 📖 Executive Summary
 
-**TEF12 Backup System** is a modular application suite designed to secure industrial data. It eliminates manual errors by enforcing naming conventions, preserving original file timestamps, and verifying data integrity across network layers (Collection -> Storage).
+**TEF12 Backup System** is a mission-critical tool designed to eliminate the "human factor" from industrial data management. In complex manufacturing environments, data loss or overwrites can be catastrophic. 
 
-### Core Modules
-1.  **Coleta App:** Front-line interface for operators to upload machine files to the staging network (07).
-2.  **Gestão App:** Administrative dashboard for auditing, redundancy checks, and final migration to secure storage (06).
+This solution acts as a **safety layer** between the user and the network. To ensure operational safety, the system is architected as **two distinct applications** with separate entry points.
 
 ---
 
 ## ✨ Key Features
 
--   **🛡️ Bosch Design System (BDS):** Custom UI built with `CustomTkinter` to ensure brand compliance.
--   **⚡ Async I/O:** Network operations run on background threads, keeping the interface responsive during large transfers.
--   **🔒 Smart Verification:** Double-check logic validates inventory existence on both source (07) and destination (06) before enabling actions.
--   **📅 Metadata Preservation:** Uses atomic operations to preserve original modification dates, critical for version control.
--   **📝 Audit Trail:** Centralized logging (`logs/audit_trail.log`) for full traceability.
+-   **👥 Role-Based Architecture:**
+    -   **Coleta App:** A streamlined, touch-friendly interface strictly for execution. Configuration menus are physically removed from this build to prevent unauthorized changes on the shop floor.
+    -   **Gestão App:** A full-featured dashboard for data analytics, logs, user administration, and system configuration.
+-   **🌍 Multi-Environment Architecture:** Safely switch between `TEST` (Sandbox) and `PROD` (Live Network) modes via `config.json`.
+-   **🛡️ Bosch Design System (BDS):** A professional UI built with `CustomTkinter` to maintain strict brand compliance.
+-   **⚡ Async I/O Engine:** Large backup transfers (GBs) run on background threads, keeping the interface fluid and responsive.
+-   **📝 Audit Trail:** Every action—from file selection to final transfer—is stamped in `logs/audit_trail.log` for compliance audits.
 
 ---
 
@@ -42,27 +42,27 @@
 
 ```text
 tef12-backupsys/
-├── assets/                  # Static assets (Images, Icons)
-├── config/                  # Configuration files (config.json)
-├── logs/                    # Runtime audit logs
+├── assets/                  # Branding assets (Logos, Icons)
+├── config/                  # Centralized Configuration (JSON)
+├── data/                    # Sandbox for TEST environment
+├── logs/                    # Audit Logs
 ├── src/
-│   ├── apps/                # Application Logic
-│   │   ├── coleta/          # Operator Interface
-│   │   └── gestao/          # Admin Interface
-│   ├── core/                # Shared Utilities & Logic
-│   └── ui/                  # Styles, Themes & Components
-├── .gitignore               # Git exclusion rules
-└── requirements.txt         # Python dependencies
+│   ├── apps/
+│   │   ├── coleta/          # OPERATOR Interface (Shop Floor)
+│   │   └── gestao/          # ADMIN Interface (Office)
+│   ├── core/                # Shared Logic (Database, Utils, Config)
+│   └── ui/                  # Shared Styles & Components
+└── requirements.txt         # Dependencies
 ```
 
 ---
 
-## 🚀 Installation
+## 🚀 Installation & Setup
 
 ### Prerequisites
 - Python 3.10+
 
-### Setup Guide
+### Quick Start
 
 1.  **Clone the repository:**
     ```bash
@@ -70,7 +70,7 @@ tef12-backupsys/
     cd tef12-backupsys
     ```
 
-2.  **Create a Virtual Environment:**
+2.  **Environment Setup:**
     ```bash
     python -m venv .venv
     # Windows:
@@ -86,41 +86,37 @@ tef12-backupsys/
 
 ---
 
-## 🖥️ Usage
+This project utilizes **separate entry points** for security. You must launch the specific module corresponding to the user role.
 
-You can run the modules individually via the terminal:
-
-**1. Backup Collection (Operator):**
+### 🏭 For Shop Floor (Operators)
+Launches the **Coleta** interface. Intended for machine controllers or industrial tablets.
 ```bash
 python -m src.apps.coleta.coletaBackup
 ```
 
-**2. Backup Management (Admin):**
+### 🏢 For Office (Managers)
+Launches the **Gestão** interface. Intended for engineering desktops for configuration and analysis.
 ```bash
 python -m src.apps.gestao.gestaoBackup
 ```
 
 ---
 
-## 📦 Build Instructions (.EXE)
+## 📦 Build for Distribution (.EXE)
 
-To compile standalone executables for Windows distribution, use **PyInstaller**. Ensure you run these commands from the project root.
+Generate standalone, portable executables for Windows deployment using **PyInstaller**. This will create two separate `.exe` files to ensure operators cannot access admin functions.
 
-### Build "Coleta" App
 ```bash
+# 1. Build Coleta (Shop Floor)
 pyinstaller --noconsole --onefile --name "TEF12_Coleta" \
 --add-data "assets;assets" --add-data "config;config" \
 src/apps/coleta/coletaBackup.py
-```
 
-### Build "Gestão" App
-```bash
+# 2. Build Gestão (Office)
 pyinstaller --noconsole --onefile --name "TEF12_Gestao" \
 --add-data "assets;assets" --add-data "config;config" \
 src/apps/gestao/gestaoBackup.py
 ```
-
-> **Note:** The executable will look for `config.json` internally. For production deployment, ensure the target machine has access to the paths defined in the configuration.
 
 ---
 
