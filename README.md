@@ -1,14 +1,16 @@
 <div align="center">
-  <img src="assets/images/supergraph.png" width="100%" alt="Bosch Supergraph" />
+  <img src="assets/images/supergraph.png" width="100%" height="12" alt="Bosch Supergraph" />
   <br />
-  <img src="assets/images/logo_bosch.png" width="180" alt="Bosch Logo" />
+  <br />
+  
+  <img src="assets/images/logo_bosch.png" width="140" alt="Bosch Logo" />
   <br />
 
   # TEF12 - Industrial Backup System
   
   [![Python](https://img.shields.io/badge/Python-3.14-007BC0?style=flat&logo=python&logoColor=white)](https://python.org)
   [![Design System](https://img.shields.io/badge/Design_System-BDS-007BC0?style=flat)](https://bosch-design-system.com)
-  [![Platform](https://img.shields.io/badge/Platform-Windows-blue?style=flat&logo=windows&logoColor=white)](#)
+  [![Platform](https://img.shields.io/badge/Platform-Windows/Linux-blue?style=flat&logo=windows&logoColor=white)](#)
   [![Status](https://img.shields.io/badge/Status-Production_Ready-success?style=flat)](#)
 
   **A robust, BDS-compliant solution for standardizing and managing CNC/PLC machine backups.**
