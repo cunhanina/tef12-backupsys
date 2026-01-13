@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import os
 import threading
 import shutil
@@ -8,10 +9,17 @@ from PIL import Image
 from tkinterdnd2 import TkinterDnD, DND_FILES
 
 # --- Original Imports ---
+=======
+import os, threading, shutil
+from datetime import datetime
+import customtkinter as ctk
+from PIL import Image
+>>>>>>> 0da70c54e8b4dc6b08a9c23c946615227fcbbc4f
 from src.core.utils import CAMINHO_RAIZ_ORIGEM_07, gerar_nome_inventario_padrao, BASE_DIR
 from src.ui.styles import BOSCH_COLORS, get_fonts
 from src.ui.components import ConfirmationModal
 
+<<<<<<< HEAD
 class FileRow(ctk.CTkFrame):
     """
     Helper component to display a file and a delete button.
@@ -53,12 +61,21 @@ class ColetaApp(ctk.CTk, TkinterDnD.DnDWrapper):
         
         self.withdraw()
         self.title("TEF12 - Coleta de Backup")
+=======
+class ColetaApp(ctk.CTk):
+    def __init__(self):
+        super().__init__()
+        self.withdraw()
+        self.title("TEF12 - Coleta de Backup")
+        # Blindagem do fundo da janela principal
+>>>>>>> 0da70c54e8b4dc6b08a9c23c946615227fcbbc4f
         self.configure(fg_color=BOSCH_COLORS["background_white"])
         
         self.fonts = get_fonts()
         self.assets, self._resize_timer = {}, None
         self.selected_files = []
         
+<<<<<<< HEAD
         # --- Layout Configuration ---
         # Row 0: Top Bar (Supergraph)
         # Row 1: Header (Title)
@@ -67,6 +84,10 @@ class ColetaApp(ctk.CTk, TkinterDnD.DnDWrapper):
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(2, weight=1)
         self.grid_rowconfigure(3, weight=0)
+=======
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(2, weight=1)
+>>>>>>> 0da70c54e8b4dc6b08a9c23c946615227fcbbc4f
         
         self._setup_ui()
         self.after(50, self._init_app)
@@ -97,11 +118,19 @@ class ColetaApp(ctk.CTk, TkinterDnD.DnDWrapper):
         self.logo_label.configure(image=ctk.CTkImage(self.assets["logo"], size=(int(60*asp), 60)))
 
     def _setup_ui(self):
+<<<<<<< HEAD
         # 1. Supergraph (Row 0)
         self.sg_bar = ctk.CTkLabel(self, text="", height=12, fg_color="transparent")
         self.sg_bar.grid(row=0, column=0, sticky="ew")
         
         # 2. Header (Row 1)
+=======
+        # 1. Supergraph (Sticky EW para preenchimento total)
+        self.sg_bar = ctk.CTkLabel(self, text="", height=12, fg_color="transparent")
+        self.sg_bar.grid(row=0, column=0, sticky="ew")
+        
+        # 2. Header
+>>>>>>> 0da70c54e8b4dc6b08a9c23c946615227fcbbc4f
         header = ctk.CTkFrame(self, fg_color="transparent")
         header.grid(row=1, column=0, sticky="ew", padx=80, pady=30)
         
@@ -112,26 +141,41 @@ class ColetaApp(ctk.CTk, TkinterDnD.DnDWrapper):
         self.logo_label = ctk.CTkLabel(header, text="")
         self.logo_label.pack(side="right")
 
+<<<<<<< HEAD
         # 3. Form Container (Row 2 - Expandable)
         self.cont = ctk.CTkFrame(self, fg_color="transparent")
         self.cont.grid(row=2, column=0, sticky="nsew", padx=80, pady=(0, 10))
         
         ctk.CTkLabel(self.cont, text="Nº INVENTÁRIO", font=self.fonts["small"], text_color=BOSCH_COLORS["text_secondary"]).pack(anchor="w")
         self.ent_inv = ctk.CTkEntry(self.cont, height=50, corner_radius=0, 
+=======
+        # 3. Form Container
+        cont = ctk.CTkFrame(self, fg_color="transparent")
+        cont.grid(row=2, column=0, sticky="nsew", padx=80)
+        
+        ctk.CTkLabel(cont, text="Nº INVENTÁRIO", font=self.fonts["small"], text_color=BOSCH_COLORS["text_secondary"]).pack(anchor="w")
+        self.ent_inv = ctk.CTkEntry(cont, height=50, corner_radius=0, 
+>>>>>>> 0da70c54e8b4dc6b08a9c23c946615227fcbbc4f
                                      border_color=BOSCH_COLORS["border_sutil"],
                                      fg_color=BOSCH_COLORS["background_light"],
                                      text_color=BOSCH_COLORS["text_primary"])
         self.ent_inv.pack(fill="x", pady=(5,25))
         
         # Checkboxes blindadas
+<<<<<<< HEAD
         cb_f = ctk.CTkFrame(self.cont, fg_color="transparent")
         cb_f.pack(fill="x", pady=(0, 20))
+=======
+        cb_f = ctk.CTkFrame(cont, fg_color="transparent")
+        cb_f.pack(fill="x", pady=10)
+>>>>>>> 0da70c54e8b4dc6b08a9c23c946615227fcbbc4f
         cb_style = {"font": self.fonts["small"], "text_color": BOSCH_COLORS["text_primary"], 
                     "fg_color": BOSCH_COLORS["blue"], "border_color": BOSCH_COLORS["blue"], "corner_radius": 0}
         
         self.cb_cnc = ctk.CTkCheckBox(cb_f, text="CNC", **cb_style); self.cb_cnc.pack(side="left", padx=(0, 30))
         self.cb_plc = ctk.CTkCheckBox(cb_f, text="PLC", **cb_style); self.cb_plc.pack(side="left")
 
+<<<<<<< HEAD
         # --- DROP ZONE & FILE LIST ---
         # Container for the drop zone
         self.drop_container = ctk.CTkFrame(self.cont, fg_color=BOSCH_COLORS["background_light"], 
@@ -191,11 +235,36 @@ class ColetaApp(ctk.CTk, TkinterDnD.DnDWrapper):
         self.btn_run.pack(fill="both")
 
         self.prog_f = ctk.CTkFrame(self.footer, fg_color="transparent")
+=======
+        # Botão Selecionar (Estilo Outlined)
+        ctk.CTkButton(cont, text="+ SELECIONAR ARQUIVOS", height=45, corner_radius=0, 
+                      fg_color="transparent", border_width=1, border_color=BOSCH_COLORS["blue"],
+                      text_color=BOSCH_COLORS["blue"], hover_color=BOSCH_COLORS["background_light"],
+                      command=self._select_files).pack(pady=20, anchor="w")
+
+        self.scroll = ctk.CTkScrollableFrame(cont, height=300, corner_radius=0, 
+                                             fg_color=BOSCH_COLORS["background_light"],
+                                             border_color=BOSCH_COLORS["border_sutil"], border_width=1)
+        self.scroll.pack(fill="both", expand=True)
+
+        # Action Area Estática
+        self.action_area = ctk.CTkFrame(cont, height=100, fg_color="transparent")
+        self.action_area.pack(fill="x", pady=40)
+        self.action_area.pack_propagate(False)
+
+        self.btn_run = ctk.CTkButton(self.action_area, text="EXECUTAR COLETA", height=70, corner_radius=0, 
+                                      fg_color=BOSCH_COLORS["blue"], text_color="white",
+                                      font=self.fonts["subtitle"], command=self._on_submit)
+        self.btn_run.pack(fill="both")
+
+        self.prog_f = ctk.CTkFrame(self.action_area, fg_color="transparent")
+>>>>>>> 0da70c54e8b4dc6b08a9c23c946615227fcbbc4f
         self.bar = ctk.CTkProgressBar(self.prog_f, height=15, progress_color=BOSCH_COLORS["blue"], corner_radius=0)
         self.bar.pack(fill="x", pady=10); self.bar.set(0)
         self.lbl_st = ctk.CTkLabel(self.prog_f, text="", font=self.fonts["log"], text_color=BOSCH_COLORS["text_secondary"])
         self.lbl_st.pack()
 
+<<<<<<< HEAD
     # --- New Logic for Drag & Drop and UI Updates ---
 
     def _update_drop_zone_view(self):
@@ -243,6 +312,16 @@ class ColetaApp(ctk.CTk, TkinterDnD.DnDWrapper):
         f = ctk.filedialog.askopenfilenames()
         if f:
             self._add_files(f)
+=======
+    def _select_files(self):
+        f = ctk.filedialog.askopenfilenames()
+        if f:
+            self.selected_files.extend(f)
+            for w in self.scroll.winfo_children(): w.destroy()
+            for x in self.selected_files:
+                ctk.CTkLabel(self.scroll, text=f"📄 {os.path.basename(x)}", 
+                             text_color=BOSCH_COLORS["text_primary"]).pack(anchor="w", padx=10)
+>>>>>>> 0da70c54e8b4dc6b08a9c23c946615227fcbbc4f
 
     def _on_submit(self):
         inv = self.ent_inv.get().strip()
@@ -273,10 +352,15 @@ class ColetaApp(ctk.CTk, TkinterDnD.DnDWrapper):
 
     def _reset_ui(self):
         self.prog_f.pack_forget(); self.btn_run.pack(fill="both")
+<<<<<<< HEAD
         self.selected_files.clear()
         for w in self.scroll.winfo_children(): w.destroy()
         self.ent_inv.delete(0, 'end'); self.bar.set(0)
         self._update_drop_zone_view()
+=======
+        self.selected_files.clear(); [w.destroy() for w in self.scroll.winfo_children()]
+        self.ent_inv.delete(0, 'end'); self.bar.set(0)
+>>>>>>> 0da70c54e8b4dc6b08a9c23c946615227fcbbc4f
 
 if __name__ == "__main__":
     app = ColetaApp()

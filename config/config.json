@@ -1,9 +1,15 @@
 {
   "APP_ENV": "TEST",
   "PROD": {
+<<<<<<< HEAD
     "PATH_ORIGEM_07": "S:\\TEC\\Technical_Function\\1.1.Process_Develop_Tools\\03.Shared\\06.Backup_Process_Program",
     "PATH_DESTINO_06": "S:\\TEC\\Technical_Function\\1.1.Process_Develop_Tools\\03.Shared\\07.Backup_Process_Program_Review",
     "PATH_LOG_CENTRAL": "logs"
+=======
+    "PATH_ORIGEM_07": "S:\\REDE_BOSCH\\07_origem",
+    "PATH_DESTINO_06": "S:\\REDE_BOSCH\\06_destino",
+    "PATH_LOG_CENTRAL": "S:\\REDE_BOSCH\\logs"
+>>>>>>> 0da70c54e8b4dc6b08a9c23c946615227fcbbc4f
   },
   "TEST": {
     "PATH_ORIGEM_07": "07_origem",

@@ -1,3 +1,15 @@
+<<<<<<< HEAD
+=======
+"""
+TEF12 - Gestão de Backup (Full Interface Restore)
+-----------------------------------------------
+Funcionalidades Restauradas:
+- Sistema de Abas (Movimentação e Auditoria).
+- Verificação explícita de 07 e 06.
+- Blindagem total contra temas externos.
+"""
+
+>>>>>>> 0da70c54e8b4dc6b08a9c23c946615227fcbbc4f
 import os
 import threading
 import shutil
