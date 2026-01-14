@@ -8,10 +8,6 @@ from datetime import datetime
 if hasattr(sys, '_MEIPASS'):
     BASE_DIR = sys._MEIPASS
 else:
-<<<<<<< HEAD
-=======
-    # Ajusta para subir dois níveis a partir de src/core/ para a raiz do projeto
->>>>>>> 0da70c54e8b4dc6b08a9c23c946615227fcbbc4f
     BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 
 # Configurações de Pastas de Log
