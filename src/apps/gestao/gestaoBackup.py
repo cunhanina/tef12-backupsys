@@ -13,7 +13,8 @@ from src.core.utils import (
     LOG_FILE_NAME,
     gerar_nome_inventario_padrao, 
     BASE_DIR,
-    audit_log
+    audit_log,
+    monitor # Importante: importar o monitor
 )
 from src.ui.styles import BOSCH_COLORS, get_fonts
 from src.ui.components import ConfirmationModal
@@ -23,7 +24,6 @@ class ManagementApp(ctk.CTk):
         super().__init__()
         self.withdraw()
         
-        # Blindagem de Fundo
         self.configure(fg_color=BOSCH_COLORS["background_white"])
         self.title("TEF12 - Gestão de Backup")
         
@@ -34,7 +34,6 @@ class ManagementApp(ctk.CTk):
         self.assets: dict = {}
         self._resize_timer = None
         
-        # Estados
         self.c_orig = self.c_dest = self.data_found = None
         
         self._initialize_ui()
@@ -44,6 +43,19 @@ class ManagementApp(ctk.CTk):
         self._load_branding()
         self.state('zoomed')
         self.deiconify()
+        
+        # --- VERIFICAÇÃO AUTOMÁTICA ---
+        # Assim que abre, verifica se algo mudou enquanto estava fechado
+        threading.Thread(target=self._run_offline_check, daemon=True).start()
+
+    def _run_offline_check(self):
+        try:
+            # Compara pasta atual com o último snapshot salvo
+            monitor.check_changes_and_log()
+            # Se houver mudanças, atualiza a aba de logs visualmente
+            self.after(0, self._refresh_logs) 
+        except Exception as e:
+            print(f"Erro ao verificar mudanças offline: {e}")
 
     def _load_branding(self) -> None:
         img_dir = os.path.join(BASE_DIR, "assets", "images")
@@ -65,11 +77,9 @@ class ManagementApp(ctk.CTk):
         self.logo_label.configure(image=ctk.CTkImage(self.assets["logo"], size=(int(60*asp), 60)))
 
     def _initialize_ui(self) -> None:
-        # 1. Supergraph
         self.sg_bar = ctk.CTkLabel(self, text="", height=12, fg_color="transparent")
         self.sg_bar.grid(row=0, column=0, sticky="ew")
         
-        # 2. Header
         header = ctk.CTkFrame(self, fg_color="transparent")
         header.grid(row=1, column=0, sticky="ew", padx=80, pady=(30, 10))
         
@@ -78,7 +88,6 @@ class ManagementApp(ctk.CTk):
         ctk.CTkLabel(t_box, text=" | Gerenciamento", font=self.fonts["title"], text_color=BOSCH_COLORS["text_primary"]).pack(side="left", padx=5)
         self.logo_label = ctk.CTkLabel(header, text=""); self.logo_label.pack(side="right")
 
-        # 3. NAVEGAÇÃO POR ABAS (Underline BDS)
         self.nav_cont = ctk.CTkFrame(self, fg_color="transparent")
         self.nav_cont.grid(row=2, column=0, sticky="nsew", padx=80)
         
@@ -100,7 +109,6 @@ class ManagementApp(ctk.CTk):
         self.indicator = ctk.CTkFrame(line, height=2, width=180, fg_color=BOSCH_COLORS["blue"])
         self.indicator.place(x=0, y=0)
 
-        # Content Views
         self.v_move = ctk.CTkFrame(self.nav_cont, fg_color="transparent")
         self.v_move.pack(fill="both", expand=True)
         self.v_logs = ctk.CTkFrame(self.nav_cont, fg_color="transparent")
@@ -109,7 +117,6 @@ class ManagementApp(ctk.CTk):
         self._build_logs_view()
 
     def _switch(self, target: str) -> None:
-        """Gerencia a troca de abas e o indicador visual."""
         if target == "MOVE":
             self.v_logs.pack_forget(); self.v_move.pack(fill="both", expand=True)
             self.indicator.place(x=0, y=0)
@@ -123,7 +130,6 @@ class ManagementApp(ctk.CTk):
             self._refresh_logs()
 
     def _build_move_view(self) -> None:
-        """Interface da aba de movimentação."""
         m = self.v_move
         ctk.CTkLabel(m, text="PESQUISAR INVENTÁRIO", font=self.fonts["small"], text_color=BOSCH_COLORS["text_secondary"]).pack(anchor="w", pady=(30, 0))
         
@@ -134,25 +140,21 @@ class ManagementApp(ctk.CTk):
         
         ctk.CTkButton(row, text="VERIFICAR", width=180, height=55, corner_radius=0, fg_color=BOSCH_COLORS["blue"], command=self._on_verify).pack(side="right", padx=(20, 0))
 
-        # Cards de Status
         self.lbl_07 = ctk.CTkLabel(m, text="• ORIGEM (07): Pendente", font=self.fonts["subtitle"], text_color=BOSCH_COLORS["text_secondary"], anchor="w")
         self.lbl_07.pack(fill="x", pady=(20, 5))
-        
         self.lbl_06 = ctk.CTkLabel(m, text="• DESTINO (06): -", font=self.fonts["subtitle"], text_color=BOSCH_COLORS["text_secondary"], anchor="w")
         self.lbl_06.pack(fill="x", pady=5)
 
-        # Botão de Execução
         self.action_area = ctk.CTkFrame(m, height=100, fg_color="transparent"); self.action_area.pack(fill="x", side="bottom", pady=40); self.action_area.pack_propagate(False)
         self.btn_exec = ctk.CTkButton(self.action_area, text="EXECUTAR TRANSFERÊNCIA DEFINITIVA", height=80, state="disabled", 
-                                      fg_color=BOSCH_COLORS["blue"], text_color="white", text_color_disabled="#D1D3D4",
-                                      font=self.fonts["subtitle"], corner_radius=0, command=self._on_submit)
+                                     fg_color=BOSCH_COLORS["blue"], text_color="white", text_color_disabled="#D1D3D4",
+                                     font=self.fonts["subtitle"], corner_radius=0, command=self._on_submit)
         self.btn_exec.pack(fill="both")
 
         self.prog_f = ctk.CTkFrame(self.action_area, fg_color="transparent")
         self.bar = ctk.CTkProgressBar(self.prog_f, height=18, progress_color=BOSCH_COLORS["blue"], corner_radius=0); self.bar.pack(fill="x", pady=15); self.bar.set(0)
 
     def _build_logs_view(self) -> None:
-        """Interface da aba de auditoria."""
         m = self.v_logs
         header = ctk.CTkFrame(m, fg_color="transparent"); header.pack(fill="x", pady=(20, 10))
         ctk.CTkLabel(header, text="HISTÓRICO DE AUDITORIA", font=self.fonts["small"], text_color=BOSCH_COLORS["text_secondary"]).pack(side="left")
@@ -168,7 +170,6 @@ class ManagementApp(ctk.CTk):
         inv_std = gerar_nome_inventario_padrao(inv)
         self.c_orig = self.data_found = None
 
-        # Verificação 07
         try:
             matches = [os.path.join(CAMINHO_RAIZ_ORIGEM_07, s) for s in os.listdir(CAMINHO_RAIZ_ORIGEM_07) if inv in s]
             if matches:
@@ -182,9 +183,10 @@ class ManagementApp(ctk.CTk):
                     self.lbl_07.configure(text="⚠️ ORIGEM (07): Pasta sem data válida.", text_color="#B38600")
             else:
                 self.lbl_07.configure(text="❌ ORIGEM (07): Não encontrado.", text_color=BOSCH_COLORS["danger"])
-        except: self.lbl_07.configure(text="❌ ORIGEM (07): Falha de conexão.", text_color=BOSCH_COLORS["danger"])
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            self.lbl_07.configure(text="❌ ORIGEM (07): Falha de conexão.", text_color=BOSCH_COLORS["danger"])
 
-        # Verificação 06
         self.c_dest = os.path.join(CAMINHO_RAIZ_DESTINO_06, inv_std)
         status_06 = "📂 REDE 06: Inventário já existente." if os.path.exists(self.c_dest) else f"🆕 REDE 06: Nova estrutura ({inv_std})."
         self.lbl_06.configure(text=status_06, text_color=BOSCH_COLORS["blue"])
@@ -200,13 +202,35 @@ class ManagementApp(ctk.CTk):
     def _worker(self) -> None:
         try:
             src = os.path.join(self.c_orig, self.data_found)
+            
+            folder_name = os.path.basename(self.c_orig)
+            
+            try:
+                files_moved = os.listdir(src)
+            except FileNotFoundError:
+                files_moved = ["Erro: Pasta não encontrada"]
+
             os.makedirs(self.c_dest, exist_ok=True)
+            
             shutil.move(src, self.c_dest)
-            if not os.listdir(self.c_orig): os.rmdir(self.c_orig)
-            audit_log(f"[GESTÃO] {os.path.basename(self.c_orig)} movido para 06")
+            
+            if not os.listdir(self.c_orig): 
+                os.rmdir(self.c_orig)
+            
+            audit_log(
+                folder=folder_name,
+                files=files_moved,
+                src=src,
+                dest=self.c_dest
+            )
+
+            # CRÍTICO: Atualizar snapshot pós-movimento para que a remoção não gere log de erro
+            monitor.save_snapshot()
+            
             self.after(0, lambda: (self.bar.set(1.0), messagebox.showinfo("Sucesso", "Backup movido com sucesso!")))
             self.after(2000, self._reset_ui)
-        except Exception as e: self.after(0, lambda: messagebox.showerror("Erro", str(e)))
+        except Exception as e: 
+            self.after(0, lambda: messagebox.showerror("Erro", str(e)))
 
     def _refresh_logs(self) -> None:
         p = os.path.join(PATH_DIRETORIO_LOG_CENTRAL, LOG_FILE_NAME)

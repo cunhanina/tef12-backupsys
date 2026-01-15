@@ -36,13 +36,10 @@ venv.bak/
 *.swo
 
 # --- Logs e Dados Temporários ---
-logs/*.log
+logs/
 06_destino/
 07_origem/
-data/test/06_destino/*
-data/test/07_origem/*
-!data/test/06_destino/.gitkeep
-!data/test/07_origem/.gitkeep
+data/
 
 # --- Compilação PyInstaller ---
 *.spec
